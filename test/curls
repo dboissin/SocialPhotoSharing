@@ -1,0 +1,2 @@
+curl -v -i -F "description=desc" -F "name=blip" -F "viewable_photo=@/Users/dboissin/Downloads/photo.jpg" -F "original_photo=@/Users/dboissin/Downloads/ori.cr2" http://localhost:9000/photos/upload
+
