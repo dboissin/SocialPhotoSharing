@@ -1,14 +1,50 @@
 package dao
 
 import model._
+
 import Constants.Constants._
 import dao.SalatContext._
 import com.mongodb.casbah.Imports._
 import com.novus.salat.dao._
 import play.Logger
 import play.api.Play
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import scala.util.Random
+import play.api.mvc.MultipartFormData.FilePart
+import play.api.libs.Files.TemporaryFile
+import play.api.libs.Codecs._
 
-object PhotoDAO extends SalatDAO[Photo, ObjectId](collection = Mongo.collection(PHOTOS_COLLECTION))
+
+trait MongoPhotoRepositoryComponent extends PhotoRepositoryComponent {
+  def photoRepository = new MongoPhotoRepository
+
+  class MongoPhotoRepository extends
+      SalatDAO[Photo, String](collection = Mongo.collection(PHOTOS_COLLECTION))
+      with PhotoRepository {
+
+    lazy val df = new SimpleDateFormat("yyyyMMddHHmmss")
+    lazy val random = new Random
+
+    def add(photo: Photo, f: FilePart[TemporaryFile]) = {
+      addFile(f) match {
+        case Some(oid) => Crud.add(photo.copy(ref = oid.toString), insert)
+        case _ => None
+      }
+    }
+
+    private def addFile(file: FilePart[TemporaryFile],
+        filename:Option[String] = None): Option[ObjectId] = {
+      val gfif = Mongo.gridfs.createFile(file.ref.file)
+      gfif.filename = filename.getOrElse("%s_%s".format(df.format(new Date), sha1(random.nextString(10))))
+      gfif.contentType = file.contentType.getOrElse("")
+      gfif.save
+      gfif._id
+  }
+  }
+}
+
 
 object Crud {
 

@@ -9,17 +9,18 @@ import dao.ObjectId
 import JsonCommon._
 
 object Photos extends Controller {
+  import Context.ApplicationContext.photoService
 
-  private def res(oid: Option[ObjectId]) = oid match {
-    case Some(id) => Ok(toJson(id))
+  private def res(oid: Option[String]) = oid match {
+    case Some(id) => Ok(JsObject(List("id" -> JsString(id))).toString)
     case _ => BadRequest("Processing error.")
   }
 
   def uploadPhoto = Action{ request =>
     res(request.body.asMultipartFormData match {
       case Some(form) if (form.file("viewable_photo").isDefined) =>
-        Photo.add(Photo(form.asFormUrlEncoded),
-            form.file("viewable_photo").get, form.file("original_photo"))
+        photoService.add(form.asFormUrlEncoded,
+            form.file("viewable_photo").get)
       case _ => None
     })
   }
