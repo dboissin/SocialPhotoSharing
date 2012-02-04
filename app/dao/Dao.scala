@@ -15,7 +15,8 @@ import scala.util.Random
 import play.api.mvc.MultipartFormData.FilePart
 import play.api.libs.Files.TemporaryFile
 import play.api.libs.Codecs._
-
+import play.api.libs.ws.SignatureCalculator
+import play.api.libs.concurrent._
 
 trait MongoPhotoRepositoryComponent extends PhotoRepositoryComponent {
   def photoRepository = new MongoPhotoRepository
@@ -27,11 +28,11 @@ trait MongoPhotoRepositoryComponent extends PhotoRepositoryComponent {
     lazy val df = new SimpleDateFormat("yyyyMMddHHmmss")
     lazy val random = new Random
 
-    def add(photo: Photo, f: FilePart[TemporaryFile]) = {
-      addFile(f) match {
+    def add(photo: Photo, f: FilePart[TemporaryFile], calc: Option[SignatureCalculator]) = {
+      Promise.pure(addFile(f) match {
         case Some(oid) => Crud.add(photo.copy(ref = oid.toString), insert)
         case _ => None
-      }
+      })
     }
 
     private def addFile(file: FilePart[TemporaryFile],

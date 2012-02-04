@@ -55,4 +55,9 @@ object Flickr extends Controller {
     }
   }
 
+  def oAuthCalculator(request: Request[_]) = sessionTokenPair(request) match {
+    case Some(tokens) => Some(OAuthCalculator(key, tokens))
+    case _ => None
+  }
+
 }
