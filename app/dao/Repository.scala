@@ -12,6 +12,10 @@ trait PhotoRepositoryComponent {
   trait PhotoRepository {
     def add(photo: Photo, f: FilePart[TemporaryFile],
         calc: Option[SignatureCalculator]): Promise[Option[String]]
+
+    def addComment(photoId: String, comment: String,
+        calc: Option[SignatureCalculator]): Promise[Option[String]]
+
   }
 
 }

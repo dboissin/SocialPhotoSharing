@@ -22,6 +22,9 @@ trait PhotoServiceComponent {
   trait PhotoService {
     def add(p: Map[String, Seq[String]], vp: FilePart[TemporaryFile],
         calc: Option[SignatureCalculator]): Promise[Option[String]]
+
+    def addComment(photoId: String, comment: String,
+        calc: Option[SignatureCalculator]): Promise[Option[String]]
   }
 }
 
@@ -39,6 +42,11 @@ trait DefaultPhotoServiceComponent extends PhotoServiceComponent {
       "", Nil
       )
       photoRepository.add(photo, vp, calc)
+    }
+
+    def addComment(photoId: String, comment: String,
+        calc: Option[SignatureCalculator]) = {
+      photoRepository.addComment(photoId, comment, calc)
     }
   }
 }

@@ -26,4 +26,22 @@ object Photos extends Controller {
     }
   }
 
+  def comment = Action { request =>
+    Async {
+    val json = request.body.asJson.getOrElse(JsNull)
+    val photoId = (json \ "photo_id").as[String]
+    val comment = (json \ "comment").as[String]
+    photoService.addComment(photoId, comment, Flickr.oAuthCalculator(request))
+    .map( _ match {
+        case Some(res) => Ok(res)
+        case _ => BadRequest("Add comment error !")
+      })
+  }}
+
+  def testComment = Action { request =>
+    Async {
+    photoService.addComment("6701065553", "testcommentonapi", Flickr.oAuthCalculator(request))
+    .map(res => Ok(res.getOrElse("none")))
+    }
+  }
 }

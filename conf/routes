@@ -5,7 +5,9 @@
 # Home page
 GET     /                           controllers.Application.index
 
+GET     /photos/testcomment         controllers.Photos.testComment
 POST    /photos/upload              controllers.Photos.uploadPhoto
+POST    /photos/comment             controllers.Photos.comment
 
 GET     /auth                       controllers.Flickr.authenticate
 GET     /flickr                     controllers.Application.test

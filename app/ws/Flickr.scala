@@ -31,6 +31,22 @@ trait FlickrPhotoRepositoryComponent extends PhotoRepositoryComponent {
       }
     }
 
+    def addComment(photoId: String, comment: String,
+        calc: Option[SignatureCalculator]) = {
+      val url = host + "/rest"
+      val body = """method=flickr.photos.comments.addComment&format=json&nojsoncallback=1&photo_id=%s&comment_text=%s"""
+        .format(photoId, comment)
+      Logger.debug(body)
+//      val r = 
+        WS.url(url + "/?" + body).sign(calc.get).get().map{ res =>
+//      calc.map(r.sign(_))
+//      r.post(body).map{res =>
+//      r.get().map{res =>
+        Logger.debug("%s - %s".format(res.status, res.body))
+        if (res.status == 200) Some(res.body) else None
+      }
+    }
+
   }
 
 }

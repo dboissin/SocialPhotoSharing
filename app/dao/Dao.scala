@@ -35,6 +35,11 @@ trait MongoPhotoRepositoryComponent extends PhotoRepositoryComponent {
       })
     }
 
+    def addComment(photoId: String, comment: String,
+        calc: Option[SignatureCalculator]): Promise[Option[String]] = {
+      Promise.pure(None)
+    }
+
     private def addFile(file: FilePart[TemporaryFile],
         filename:Option[String] = None): Option[ObjectId] = {
       val gfif = Mongo.gridfs.createFile(file.ref.file)
