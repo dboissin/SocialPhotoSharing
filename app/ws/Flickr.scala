@@ -22,13 +22,15 @@ trait FlickrPhotoRepositoryComponent extends PhotoRepositoryComponent {
 
     def add(photo: Photo, f: FilePart[TemporaryFile], calc: Option[SignatureCalculator]) = {
       val url = host + "/upload"
-      WSUtil.post(url, List(
+      val qs = "/?title=%s&description=%s"
+        .format(encode(photo.title, "UTF-8"), encode(photo.description, "UTF-8"))
+      WSUtil.post(url + qs, List(
           new AHCFilePart("photo", f.ref.file, "application/octet-stream", ""),
           new StringPart("title", photo.title),
           new StringPart("description", photo.description)
       ), calc).map{res =>
         Logger.debug("%s - %s".format(res.status, res.body))
-        if (res.status == 200) (res.json \ "photoid").asOpt[String] else None
+        if (res.status == 200) Some((res.xml \\ "photoid").text) else None
       }
     }
 
