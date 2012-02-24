@@ -11,6 +11,7 @@ import com.ning.http.client.{FilePart => AHCFilePart}
 import com.ning.http.client.StringPart
 import play.api.libs.oauth._
 import play.api.Logger
+import java.net.URLEncoder._
 
 trait FlickrPhotoRepositoryComponent extends PhotoRepositoryComponent {
   def photoRepository = new FlickrPhotoRepository
@@ -35,13 +36,10 @@ trait FlickrPhotoRepositoryComponent extends PhotoRepositoryComponent {
         calc: Option[SignatureCalculator]) = {
       val url = host + "/rest"
       val body = """method=flickr.photos.comments.addComment&format=json&nojsoncallback=1&photo_id=%s&comment_text=%s"""
-        .format(photoId, comment)
-      Logger.debug(body)
-//      val r = 
-        WS.url(url + "/?" + body).sign(calc.get).get().map{ res =>
-//      calc.map(r.sign(_))
-//      r.post(body).map{res =>
-//      r.get().map{res =>
+        .format(encode(photoId, "UTF-8"), encode(comment, "UTF-8"))
+      Logger.debug("Comment request : %s".format(body))
+      Logger.debug("calc : %s".format(calc))
+        WS.url(url + "/?" + body).sign(calc.get).post("").map{ res =>
         Logger.debug("%s - %s".format(res.status, res.body))
         if (res.status == 200) Some(res.body) else None
       }

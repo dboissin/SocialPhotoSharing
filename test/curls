@@ -1,1 +1,3 @@
 curl -v -i -F "description=desc" -F "name=blip" -F "viewable_photo=@/Users/dboissin/Downloads/photo.jpg" http://localhost:9000/photos/upload
+
+curl --cookie "PLAY_SESSION=" -v -i -X POST -H "Content-Type: application/json" -d '{"photo_id" : "6701065553", "comment" : "Là je fais un test avec des accents et tout."}' http://localhost:9000/photos/comment
